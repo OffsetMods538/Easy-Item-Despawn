@@ -1,0 +1,123 @@
+plugins {
+	id 'fabric-loom' version '1.3-SNAPSHOT'
+	id 'io.github.dexman545.outlet' version '1.5.1'
+	id 'com.modrinth.minotaur' version '2.+'
+}
+
+sourceCompatibility = JavaVersion.VERSION_17
+targetCompatibility = JavaVersion.VERSION_17
+
+archivesBaseName = "easy-item-despawn"
+version = "${project.mod_version}+${project.minecraft_version}"
+outlet.mcVersionRange = project.supported_minecraft_versions
+
+
+configurations {
+	includeModImplementation
+
+	include.extendsFrom           includeModImplementation
+	modImplementation.extendsFrom includeModImplementation
+
+
+	includeImplementation
+
+	include.extendsFrom        includeImplementation
+	implementation.extendsFrom includeImplementation
+}
+
+repositories {
+	maven {
+		name = "JitPack"
+		url  = "https://jitpack.io"
+		content {
+			includeGroup "com.github.llamalad7.mixinextras"
+		}
+	}
+
+	maven {
+		name = "Modrinth"
+		url = "https://api.modrinth.com/maven"
+		content {
+			includeGroup "maven.modrinth"
+		}
+	}
+}
+
+dependencies {
+	minecraft "com.mojang:minecraft:${project.minecraft_version}"
+	mappings "net.fabricmc:yarn:${project.yarn_mappings}:v2"
+	modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
+
+
+	// Uncomment for including a module of fabric api
+	// includeModImplementation fabricApi.module("fabric-api-base", project.fabric_api_version)
+
+	// Mixin Extras
+	includeImplementation annotationProcessor("com.github.llamalad7.mixinextras:mixinextras-fabric:${project.mixinextras_version}")
+
+	// MonkeyConfig538
+	includeModImplementation "maven.modrinth:monkeyconfig538:${project.monkeyconfig538_version}"
+}
+
+loom {
+	splitEnvironmentSourceSets()
+
+	mods {
+		modid {
+			sourceSet sourceSets.main
+			sourceSet sourceSets.client
+		}
+	}
+
+	accessWidenerPath = file("src/main/resources/easy-item-despawn.accesswidener")
+}
+
+processResources {
+	inputs.properties(Map.of(
+		"modVersion",                 project.version,
+		"supportedMinecraftVersions", project.supported_minecraft_versions
+	))
+
+	filesMatching("fabric.mod.json") {
+		expand(Map.of(
+			"modVersion",                 project.version,
+			"supportedMinecraftVersions", project.supported_minecraft_versions
+		))
+	}
+}
+
+tasks.withType(JavaCompile).configureEach {
+	it.options.release = 17
+}
+
+java {
+	withSourcesJar()
+}
+
+jar {
+	from("LICENSE") {
+		rename { "${it}_${project.archivesBaseName}" }
+	}
+}
+
+modrinth {
+	token = System.getenv("MODRINTH_TOKEN")
+	projectId = "easy-item-despawn"
+	def customVersionName = System.getenv("VERSION_NAME")
+	if (customVersionName != null) versionName = customVersionName
+	versionNumber = "${project.version}"
+	versionType = "beta"
+	uploadFile = remapJar.archiveFile
+	//additionalFiles = [sourcesJar.archiveFile, javadocJar.archiveFile]
+	additionalFiles = [sourcesJar.archiveFile]
+	gameVersions = outlet.mcVersions()
+	syncBodyFrom = rootProject.file("README.md").text
+	def changelogFile = rootProject.file("CHANGELOG.md")
+	if (changelogFile.exists()) {
+		changelog = changelogFile.text
+	}
+
+	dependencies {
+		embedded.project "monkeyconfig538"
+	}
+}

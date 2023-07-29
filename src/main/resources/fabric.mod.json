@@ -1,0 +1,38 @@
+{
+	"schemaVersion": 1,
+	"id": "easy-item-despawn",
+	"version": "${modVersion}",
+	"name": "Easy Item Despawn",
+	"description": "Makes it possible to easily configure the despawn time for items dropped by different entities.",
+	"authors": [
+		"OffsetMonkey538"
+	],
+	"contact": {
+		"sources": "https://github.com/OffsetMods538/Easy-Item-Despawn"
+	},
+	"license": "MIT",
+	"icon": "assets/easy-item-despawn/icon.png",
+	"environment": "*",
+	"entrypoints": {
+		"main": [
+			"top.offsetmonkey538.easyitemdespawn.EasyItemDespawn"
+		],
+		"client": [
+			"top.offsetmonkey538.easyitemdespawn.EasyItemDespawnClient"
+		],
+		"preLaunch": [
+			"com.llamalad7.mixinextras.MixinExtrasBootstrap::init"
+		]
+	},
+	"mixins": [
+		"easy-item-despawn.mixins.json",
+		{
+			"config": "easy-item-despawn.client.mixins.json",
+			"environment": "client"
+		}
+	],
+	"accessWidener": "easy-item-despawn.accesswidener",
+	"depends": {
+		"minecraft": "${supportedMinecraftVersions}"
+	}
+}
