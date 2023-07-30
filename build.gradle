@@ -26,19 +26,13 @@ configurations {
 }
 
 repositories {
+	mavenCentral()
 	maven {
 		name = "JitPack"
 		url  = "https://jitpack.io"
 		content {
 			includeGroup "com.github.llamalad7.mixinextras"
-		}
-	}
-
-	maven {
-		name = "Modrinth"
-		url = "https://api.modrinth.com/maven"
-		content {
-			includeGroup "maven.modrinth"
+			includeGroup "top.offsetmonkey538"
 		}
 	}
 }
@@ -56,7 +50,7 @@ dependencies {
 	includeImplementation annotationProcessor("com.github.llamalad7.mixinextras:mixinextras-fabric:${project.mixinextras_version}")
 
 	// MonkeyConfig538
-	includeModImplementation "maven.modrinth:monkeyconfig538:${project.monkeyconfig538_version}"
+	includeModImplementation "top.offsetmonkey538:monkeyconfig538:v1.0.0"
 }
 
 loom {
