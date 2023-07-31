@@ -8,14 +8,15 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.Constant;
 import org.spongepowered.asm.mixin.injection.ModifyConstant;
-import top.offsetmonkey538.easyitemdespawn.config.ModConfig;
 import top.offsetmonkey538.easyitemdespawn.access.ItemEntityAccess;
+
+import static top.offsetmonkey538.easyitemdespawn.EasyItemDespawn.*;
 
 @Mixin(ItemEntity.class)
 public abstract class ItemEntityMixin implements ItemEntityAccess {
 
     @Unique
-    private Identifier dropper = null;
+    private Identifier easy_item_despawn$dropper = null;
 
     @ModifyConstant(
             method = "tick",
@@ -24,11 +25,13 @@ public abstract class ItemEntityMixin implements ItemEntityAccess {
             )
     )
     private int modifyDespawnTime(int constant) {
-        return ModConfig.globalDespawnTime;
+        if (easy_item_despawn$dropper == null) return config().globalDespawnTime;
+        if (!config().entityDropDespawnTimes.containsKey(easy_item_despawn$dropper.toString())) return config().globalDespawnTime;
+        return config().entityDropDespawnTimes.get(easy_item_despawn$dropper.toString());
     }
 
     @Override
-    public void setDropper(Entity dropper) {
-        this.dropper = Registries.ENTITY_TYPE.getId(dropper.getType());
+    public void easy_item_despawn$setDropper(Entity dropper) {
+        this.easy_item_despawn$dropper = Registries.ENTITY_TYPE.getId(dropper.getType());
     }
 }

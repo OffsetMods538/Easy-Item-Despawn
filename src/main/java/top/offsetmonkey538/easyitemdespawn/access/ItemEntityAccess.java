@@ -4,5 +4,5 @@ import net.minecraft.entity.Entity;
 
 public interface ItemEntityAccess {
 
-    void setDropper(Entity dropper);
+    void easy_item_despawn$setDropper(Entity dropper);
 }
