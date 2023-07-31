@@ -11,6 +11,6 @@ public class ModConfig extends Config {
      public int globalDespawnTime = 6000;
 
      public Map<String, Integer> entityDropDespawnTimes = new HashMap<>(Map.of(
-             "minecraft:player", 200
+             "minecraft:player", 12000
      ));
 }
