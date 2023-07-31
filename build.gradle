@@ -50,7 +50,7 @@ dependencies {
 	includeImplementation annotationProcessor("com.github.llamalad7.mixinextras:mixinextras-fabric:${project.mixinextras_version}")
 
 	// MonkeyConfig538
-	includeModImplementation "top.offsetmonkey538:monkeyconfig538:v1.0.0"
+	includeModImplementation "top.offsetmonkey538:monkeyconfig538:${project.monkeyconfig538_version}"
 }
 
 loom {
