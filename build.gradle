@@ -1,6 +1,6 @@
 plugins {
-	id 'fabric-loom' version '1.3-SNAPSHOT'
-	id 'io.github.dexman545.outlet' version '1.5.1'
+	id 'fabric-loom' version '1.5-SNAPSHOT'
+	id 'io.github.dexman545.outlet' version '1.6.1'
 	id 'com.modrinth.minotaur' version '2.+'
 }
 
@@ -9,8 +9,42 @@ targetCompatibility = JavaVersion.VERSION_17
 
 archivesBaseName = "easy-item-despawn"
 version = "${project.mod_version}+${project.minecraft_version}"
-outlet.mcVersionRange = project.supported_minecraft_versions
 
+outlet {
+	maintainPropertiesFile = System.getenv("DISABLE_PROPERTIES_UPDATE") == null
+	mcVersionRange = project.supported_minecraft_versions
+	propertiesData = [
+	        'yarn_version': outlet.yarnVersion(project.minecraft_version),
+			'loader_version': outlet.loaderVersion()
+	]
+}
+
+
+loom {
+	splitEnvironmentSourceSets()
+
+	mods {
+		modid {
+			sourceSet sourceSets.main
+			sourceSet sourceSets.client
+		}
+	}
+
+	accessWidenerPath = file("src/main/resources/easy-item-despawn.accesswidener")
+
+	runs {
+		server {
+			runDir "run/server"
+		}
+	}
+}
+
+// https://gist.github.com/maityyy/3dbcd558d58a6412c3a2a38c72706e8e
+afterEvaluate {
+	loom.runs.configureEach {
+		vmArg "-javaagent:${configurations.compileClasspath.find{ it.name.contains("sponge-mixin") }}"
+	}
+}
 
 configurations {
 	includeModImplementation
@@ -31,7 +65,6 @@ repositories {
 		name = "JitPack"
 		url  = "https://jitpack.io"
 		content {
-			includeGroup "com.github.llamalad7.mixinextras"
 			includeGroup "top.offsetmonkey538"
 		}
 	}
@@ -39,43 +72,29 @@ repositories {
 
 dependencies {
 	minecraft "com.mojang:minecraft:${project.minecraft_version}"
-	mappings "net.fabricmc:yarn:${outlet.yarnVersion(project.minecraft_version)}:v2"
-	modImplementation "net.fabricmc:fabric-loader:${outlet.loaderVersion()}"
+	mappings "net.fabricmc:yarn:${project.yarn_version}:v2"
+	modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
 
 
 	// Uncomment for including a module of fabric api
 	// includeModImplementation fabricApi.module("fabric-api-base", project.fabric_api_version)
 
-	// Mixin Extras
-	includeImplementation annotationProcessor("com.github.llamalad7.mixinextras:mixinextras-fabric:${project.mixinextras_version}")
-
 	// MonkeyConfig538
-	includeModImplementation "top.offsetmonkey538:monkeyconfig538:${project.monkeyconfig538_version}"
-}
-
-loom {
-	splitEnvironmentSourceSets()
-
-	mods {
-		modid {
-			sourceSet sourceSets.main
-			sourceSet sourceSets.client
-		}
-	}
-
-	accessWidenerPath = file("src/main/resources/easy-item-despawn.accesswidener")
+	includeModImplementation "top.offsetmonkey538:monkeylib538:${project.monkeylib538_version}"
 }
 
 processResources {
 	inputs.properties(Map.of(
-		"modVersion",                 project.version,
-		"supportedMinecraftVersions", project.supported_minecraft_versions
+		"modVersion",                 project.mod_version,
+		"supportedMinecraftVersions", project.supported_minecraft_versions,
+		"monkeylib538Version",        project.monkeylib538_version
 	))
 
 	filesMatching("fabric.mod.json") {
 		expand(Map.of(
-			"modVersion",                 project.version,
-			"supportedMinecraftVersions", project.supported_minecraft_versions
+			"modVersion",                 project.mod_version,
+			"supportedMinecraftVersions", project.supported_minecraft_versions,
+			"monkeylib538Version",        project.monkeylib538_version
 		))
 	}
 }
@@ -112,6 +131,8 @@ modrinth {
 	}
 
 	dependencies {
-		embedded.project "monkeyconfig538"
+		required.project "monkeylib538"
 	}
 }
+
+tasks.modrinth.dependsOn(tasks.modrinthSyncBody)

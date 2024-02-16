@@ -10,7 +10,7 @@ import org.spongepowered.asm.mixin.injection.Constant;
 import org.spongepowered.asm.mixin.injection.ModifyConstant;
 import top.offsetmonkey538.easyitemdespawn.access.ItemEntityAccess;
 
-import static top.offsetmonkey538.easyitemdespawn.EasyItemDespawn.*;
+import static top.offsetmonkey538.easyitemdespawn.EasyItemDespawn.config;
 
 @Mixin(ItemEntity.class)
 public abstract class ItemEntityMixin implements ItemEntityAccess {
@@ -25,9 +25,9 @@ public abstract class ItemEntityMixin implements ItemEntityAccess {
             )
     )
     private int modifyDespawnTime(int constant) {
-        if (easy_item_despawn$dropper == null) return config().globalDespawnTime;
-        if (!config().entityDropDespawnTimes.containsKey(easy_item_despawn$dropper.toString())) return config().globalDespawnTime;
-        return config().entityDropDespawnTimes.get(easy_item_despawn$dropper.toString());
+        if (easy_item_despawn$dropper == null) return config.globalDespawnTime;
+        if (!config.entityDropDespawnTimes.containsKey(easy_item_despawn$dropper.toString())) return config.globalDespawnTime;
+        return config.entityDropDespawnTimes.get(easy_item_despawn$dropper.toString());
     }
 
     @Override

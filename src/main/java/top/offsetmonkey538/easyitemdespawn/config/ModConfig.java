@@ -1,9 +1,12 @@
 package top.offsetmonkey538.easyitemdespawn.config;
 
 import blue.endless.jankson.Comment;
+import top.offsetmonkey538.monkeylib538.config.Config;
+
 import java.util.HashMap;
 import java.util.Map;
-import top.offsetmonkey538.monkeyconfig538.Config;
+
+import static top.offsetmonkey538.easyitemdespawn.EasyItemDespawn.MOD_ID;
 
 public class ModConfig extends Config {
 
@@ -13,4 +16,9 @@ public class ModConfig extends Config {
      public Map<String, Integer> entityDropDespawnTimes = new HashMap<>(Map.of(
              "minecraft:player", 12000
      ));
+
+     @Override
+     protected String getName() {
+          return MOD_ID;
+     }
 }
