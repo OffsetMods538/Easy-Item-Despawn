@@ -1,3 +1,5 @@
+import dex.plugins.outlet.v2.util.ReleaseType
+
 plugins {
 	id 'fabric-loom' version '1.6-SNAPSHOT'
 	id 'io.github.dexman545.outlet' version '1.6.1'
@@ -13,12 +15,12 @@ version = "${project.mod_version}+${project.minecraft_version}"
 outlet {
 	maintainPropertiesFile = System.getenv("DISABLE_PROPERTIES_UPDATE") == null
 	mcVersionRange = project.supported_minecraft_versions
+	allowedReleaseTypes = Set.of(ReleaseType.RELEASE)
 	propertiesData = [
 	        'yarn_version': outlet.yarnVersion(project.minecraft_version),
 			'loader_version': outlet.loaderVersion()
 	]
 }
-
 
 loom {
 	splitEnvironmentSourceSets()
@@ -46,26 +48,14 @@ afterEvaluate {
 	}
 }
 
-configurations {
-	includeModImplementation
-
-	include.extendsFrom           includeModImplementation
-	modImplementation.extendsFrom includeModImplementation
-
-
-	includeImplementation
-
-	include.extendsFrom        includeImplementation
-	implementation.extendsFrom includeImplementation
-}
-
 repositories {
 	mavenCentral()
+	mavenLocal()
 	maven {
-		name = "JitPack"
-		url  = "https://jitpack.io"
+		name = "OffsetMods538"
+		url = "https://maven.offsetmonkey538.top/releases"
 		content {
-			includeGroup "top.offsetmonkey538"
+			includeGroup "top.offsetmonkey538.monkeylib538"
 		}
 	}
 }
@@ -79,8 +69,8 @@ dependencies {
 	// Uncomment for including a module of fabric api
 	// includeModImplementation fabricApi.module("fabric-api-base", project.fabric_api_version)
 
-	// MonkeyConfig538
-	includeModImplementation "top.offsetmonkey538:monkeylib538:${project.monkeylib538_version}"
+	// MonkeyLib538
+	modImplementation "top.offsetmonkey538.monkeylib538:monkeylib538:${project.monkeylib538_version}"
 }
 
 processResources {
